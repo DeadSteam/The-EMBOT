@@ -1,134 +1,51 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('task-form');
-    const taskNameInput = document.getElementById('task-name');
-    const urgentCheckbox = document.getElementById('urgent');
-    const importantCheckbox = document.getElementById('important');
-
-    const taskLists = {
-        'important-urgent': document.getElementById('important-urgent'),
-        'important-not-urgent': document.getElementById('important-not-urgent'),
-        'not-important-urgent': document.getElementById('not-important-urgent'),
-        'not-important-not-urgent': document.getElementById('not-important-not-urgent'),
-    };
-
-    function loadTasks() {
-        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        tasks.forEach(task => addTaskToDOM(task));
-    }
-
-    function saveTasks(tasks) {
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-    }
-
-    function addTaskToDOM(task) {
-        const listItem = document.createElement('li');
-        listItem.textContent = task.name;
-
-        const editButton = document.createElement('button');
-        editButton.textContent = 'Редактировать';
-        editButton.addEventListener('click', () => editTask(task.id));
-
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Удалить';
-        deleteButton.addEventListener('click', () => deleteTask(task.id));
-
-        listItem.appendChild(editButton);
-        listItem.appendChild(deleteButton);
-
-        const category = getCategory(task);
-        taskLists[category].appendChild(listItem);
-    }
-
-    function getCategory(task) {
-        if (task.important && task.urgent) return 'important-urgent';
-        if (task.important) return 'important-not-urgent';
-        if (task.urgent) return 'not-important-urgent';
-        return 'not-important-not-urgent';
-    }
-
-    function addTask(event) {
-        event.preventDefault();
-        const taskName = taskNameInput.value;
-        const urgent = urgentCheckbox.checked;
-        const important = importantCheckbox.checked;
-
-        if (taskName.trim() === '') return;
-
-        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        const task = { id: Date.now(), name: taskName, urgent, important };
-        tasks.push(task);
-        saveTasks(tasks);
-        addTaskToDOM(task);
-
-        form.reset();
-        hiddenInput.focus(); // Перемещаем фокус на скрытое поле
-
-    }
-    form.addEventListener('submit', addTask);
-    
-    function editTask(taskId) {
-        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        const task = tasks.find(t => t.id === taskId);
-        if (!task) return;
-
-        taskNameInput.value = task.name;
-        urgentCheckbox.checked = task.urgent;
-        importantCheckbox.checked = task.important;
-
-        deleteTask(taskId);
-    }
-
-    function deleteTask(taskId) {
-        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        const updatedTasks = tasks.filter(task => task.id !== taskId);
-        saveTasks(updatedTasks);
-        refreshTaskLists();
-    }
-
-    function refreshTaskLists() {
-        Object.values(taskLists).forEach(list => list.innerHTML = '');
-        loadTasks();
-    }
-    function addTaskToDOM(task) {
-        const listItem = document.createElement('li');
-        listItem.textContent = task.name;
-
-        const editIcon = document.createElement('span');
-        editIcon.innerHTML = '&#9998;'; // Значок карандаша для редактирования
-        editIcon.classList.add('edit-icon');
-        editIcon.addEventListener('click', () => editTask(task.id));
-
-        const deleteIcon = document.createElement('span');
-        deleteIcon.innerHTML = '&#10006;'; // Значок крестика для удаления
-        deleteIcon.classList.add('delete-icon');
-        deleteIcon.addEventListener('click', () => deleteTask(task.id));
-
-        listItem.appendChild(editIcon);
-        listItem.appendChild(deleteIcon);
-
-        const category = getCategory(task);
-        taskLists[category].appendChild(listItem);
-    }
-    form.addEventListener('submit', addTask);
-
-    function addTask(event) {
-        event.preventDefault();
-        const taskName = taskNameInput.value;
-        const urgent = urgentCheckbox.checked;
-        const important = importantCheckbox.checked;
-
-        if (taskName.trim() === '') return;
-
-        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        const task = { id: Date.now(), name: taskName, urgent, important };
-        tasks.push(task);
-        saveTasks(tasks);
-        addTaskToDOM(task);
-
-        form.reset();
-        taskNameInput.blur(); // Скрыть клавиатуру после отправки формы
-    }
-
-    form.addEventListener('submit', addTask);
-    loadTasks();
-});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Матрица Эйзенхауэра</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="matrix-container">
+        <h1>Матрица Эйзенхауэра</h1>
+        <table class="matrix">
+            <tr>
+                <td class="cell important-urgent">
+                    <h4>Важное и срочное</h4>
+                    <ul id="important-urgent"></ul>
+                </td>
+                <td class="cell important-not-urgent">
+                    <h4>Важное, но не срочное</h4>
+                    <ul id="important-not-urgent"></ul>
+                </td>
+            </tr>
+            <tr>
+                <td class="cell not-important-urgent">
+                    <h4>Неважное, но срочное</h4>
+                    <ul id="not-important-urgent"></ul>
+                </td>
+                <td class="cell not-important-not-urgent">
+                    <h4>Неважное и не срочное</h4>
+                    <ul id="not-important-not-urgent"></ul>
+                </td>
+            </tr>
+        </table>
+        <form class="task-form" id="task-form">
+            <h2>Добавить новую задачу</h2>
+            <input type="text" id="task-name" name="task-name" placeholder="Название задачи" required>
+            <input type="text" style="opacity: 0; position: absolute; left: -9999px;"> <!-- Скрытое поле -->
+            <label>
+                <input type="checkbox" id="urgent">
+                Срочное
+            </label>
+            <label>
+                <input type="checkbox" id="important">
+                Важное
+            </label>
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
