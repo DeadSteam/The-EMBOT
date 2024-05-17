@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskNameInput = document.getElementById('task-name');
     const urgentCheckbox = document.getElementById('urgent');
     const importantCheckbox = document.getElementById('important');
+    const hiddenInput = document.getElementById('hidden-input'); // Добавленное скрытое поле
 
     const taskLists = {
         'important-urgent': document.getElementById('important-urgent'),
@@ -24,16 +25,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const listItem = document.createElement('li');
         listItem.textContent = task.name;
 
-        const editButton = document.createElement('button');
-        editButton.textContent = 'Редактировать';
-        editButton.addEventListener('click', () => editTask(task.id));
+        const editIcon = document.createElement('span');
+        editIcon.innerHTML = '&#9998;'; // Значок карандаша для редактирования
+        editIcon.classList.add('edit-icon');
+        editIcon.addEventListener('click', () => editTask(task.id));
 
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Удалить';
-        deleteButton.addEventListener('click', () => deleteTask(task.id));
+        const deleteIcon = document.createElement('span');
+        deleteIcon.innerHTML = '&#10006;'; // Значок крестика для удаления
+        deleteIcon.classList.add('delete-icon');
+        deleteIcon.addEventListener('click', () => deleteTask(task.id));
 
-        listItem.appendChild(editButton);
-        listItem.appendChild(deleteButton);
+        listItem.appendChild(editIcon);
+        listItem.appendChild(deleteIcon);
 
         const category = getCategory(task);
         taskLists[category].appendChild(listItem);
@@ -46,26 +49,23 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'not-important-not-urgent';
     }
 
-    form.addEventListener('submit', addTask);
-    
     function addTask(event) {
         event.preventDefault();
         const taskName = taskNameInput.value;
         const urgent = urgentCheckbox.checked;
         const important = importantCheckbox.checked;
-    
+
         if (taskName.trim() === '') return;
-    
+
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         const task = { id: Date.now(), name: taskName, urgent, important };
         tasks.push(task);
         saveTasks(tasks);
         addTaskToDOM(task);
-    
-        form.reset();
-        taskNameInput.blur(); // Скрыть клавиатуру после отправки формы
-    }
 
+        form.reset();
+        hiddenInput.focus(); // Перемещаем фокус на скрытое поле
+    }
 
     function editTask(taskId) {
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
@@ -90,44 +90,15 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.values(taskLists).forEach(list => list.innerHTML = '');
         loadTasks();
     }
-    function addTaskToDOM(task) {
-        const listItem = document.createElement('li');
-        listItem.textContent = task.name;
 
-        const editIcon = document.createElement('span');
-        editIcon.innerHTML = '&#9998;'; // Значок карандаша для редактирования
-        editIcon.classList.add('edit-icon');
-        editIcon.addEventListener('click', () => editTask(task.id));
+    // Добавляем обработчик события focus для поля ввода задачи
+    taskNameInput.addEventListener('focus', hideKeyboard);
 
-        const deleteIcon = document.createElement('span');
-        deleteIcon.innerHTML = '&#10006;'; // Значок крестика для удаления
-        deleteIcon.classList.add('delete-icon');
-        deleteIcon.addEventListener('click', () => deleteTask(task.id));
-
-        listItem.appendChild(editIcon);
-        listItem.appendChild(deleteIcon);
-
-        const category = getCategory(task);
-        taskLists[category].appendChild(listItem);
-    }
-    form.addEventListener('submit', addTask);
-
-    function addTask(event) {
-        event.preventDefault();
-        const taskName = taskNameInput.value;
-        const urgent = urgentCheckbox.checked;
-        const important = importantCheckbox.checked;
-
-        if (taskName.trim() === '') return;
-
-        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        const task = { id: Date.now(), name: taskName, urgent, important };
-        tasks.push(task);
-        saveTasks(tasks);
-        addTaskToDOM(task);
-
-        form.reset();
-        taskNameInput.blur(); // Скрыть клавиатуру после отправки формы
+    // Функция для скрытия клавиатуры
+    function hideKeyboard() {
+        if (window.innerWidth <= 600) { // Проверяем ширину экрана
+            taskNameInput.blur(); // Снимаем фокус с поля ввода
+        }
     }
 
     form.addEventListener('submit', addTask);
