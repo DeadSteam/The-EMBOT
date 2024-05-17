@@ -49,22 +49,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'not-important-not-urgent';
     }
 
+    form.addEventListener('submit', addTask);
+    
     function addTask(event) {
         event.preventDefault();
         const taskName = taskNameInput.value;
         const urgent = urgentCheckbox.checked;
         const important = importantCheckbox.checked;
-
+    
         if (taskName.trim() === '') return;
-
+    
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         const task = { id: Date.now(), name: taskName, urgent, important };
         tasks.push(task);
         saveTasks(tasks);
         addTaskToDOM(task);
-
+    
         form.reset();
-        hiddenInput.focus(); // Перемещаем фокус на скрытое поле
+        document.activeElement.blur(); // Скрыть клавиатуру после отправки формы
     }
 
     function editTask(taskId) {
