@@ -51,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', addTask);
     
+    form.addEventListener('submit', addTask);
+    
     function addTask(event) {
         event.preventDefault();
         const taskName = taskNameInput.value;
@@ -66,9 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
         addTaskToDOM(task);
     
         form.reset();
-        document.activeElement.blur(); // Скрыть клавиатуру после отправки формы
+        if (window.innerWidth <= 600) { // Проверяем ширину экрана
+            hiddenInput.focus(); // Перемещаем фокус на скрытое поле
+        }
     }
-
     function editTask(taskId) {
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         const task = tasks.find(t => t.id === taskId);
