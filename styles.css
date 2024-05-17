@@ -1,3 +1,5 @@
+/* Общие стили */
+
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -84,4 +86,41 @@ li {
 
 .task-form button:hover {
     background-color: #218838;
+}
+
+/* Медиа-запросы для различных устройств */
+
+/* Для устройств с шириной экрана менее 600px */
+@media screen and (max-width: 600px) {
+    .matrix .cell {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .task-form input[type="text"] {
+        width: 100%;
+    }
+}
+
+/* Для устройств с шириной экрана от 601px до 900px */
+@media screen and (min-width: 601px) and (max-width: 900px) {
+    .matrix .cell {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .task-form input[type="text"] {
+        width: 100%;
+    }
+}
+
+/* Для устройств с шириной экрана от 901px и выше */
+@media screen and (min-width: 901px) {
+    .matrix .cell {
+        width: 50%;
+    }
+
+    .task-form input[type="text"] {
+        width: 80%;
+    }
 }
