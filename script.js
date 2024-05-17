@@ -86,6 +86,45 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.values(taskLists).forEach(list => list.innerHTML = '');
         loadTasks();
     }
+    function addTaskToDOM(task) {
+        const listItem = document.createElement('li');
+        listItem.textContent = task.name;
+
+        const editIcon = document.createElement('span');
+        editIcon.innerHTML = '&#9998;'; // Значок карандаша для редактирования
+        editIcon.classList.add('edit-icon');
+        editIcon.addEventListener('click', () => editTask(task.id));
+
+        const deleteIcon = document.createElement('span');
+        deleteIcon.innerHTML = '&#10006;'; // Значок крестика для удаления
+        deleteIcon.classList.add('delete-icon');
+        deleteIcon.addEventListener('click', () => deleteTask(task.id));
+
+        listItem.appendChild(editIcon);
+        listItem.appendChild(deleteIcon);
+
+        const category = getCategory(task);
+        taskLists[category].appendChild(listItem);
+    }
+    form.addEventListener('submit', addTask);
+
+    function addTask(event) {
+        event.preventDefault();
+        const taskName = taskNameInput.value;
+        const urgent = urgentCheckbox.checked;
+        const important = importantCheckbox.checked;
+    
+        if (taskName.trim() === '') return;
+    
+        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        const task = { id: Date.now(), name: taskName, urgent, important };
+        tasks.push(task);
+        saveTasks(tasks);
+        addTaskToDOM(task);
+    
+        form.reset();
+        taskNameInput.blur(); // Скрыть клавиатуру после отправки формы
+    }
 
     form.addEventListener('submit', addTask);
     loadTasks();
