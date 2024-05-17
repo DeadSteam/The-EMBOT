@@ -61,8 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
         addTaskToDOM(task);
 
         form.reset();
-    }
+        hiddenInput.focus(); // Перемещаем фокус на скрытое поле
 
+    }
+    form.addEventListener('submit', addTask);
+    
     function editTask(taskId) {
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         const task = tasks.find(t => t.id === taskId);
@@ -113,15 +116,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const taskName = taskNameInput.value;
         const urgent = urgentCheckbox.checked;
         const important = importantCheckbox.checked;
-    
+
         if (taskName.trim() === '') return;
-    
+
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         const task = { id: Date.now(), name: taskName, urgent, important };
         tasks.push(task);
         saveTasks(tasks);
         addTaskToDOM(task);
-    
+
         form.reset();
         taskNameInput.blur(); // Скрыть клавиатуру после отправки формы
     }
