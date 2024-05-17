@@ -49,29 +49,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'not-important-not-urgent';
     }
 
-    form.addEventListener('submit', addTask);
-    
-    form.addEventListener('submit', addTask);
-    
     function addTask(event) {
         event.preventDefault();
         const taskName = taskNameInput.value;
         const urgent = urgentCheckbox.checked;
         const important = importantCheckbox.checked;
-    
+
         if (taskName.trim() === '') return;
-    
+
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         const task = { id: Date.now(), name: taskName, urgent, important };
         tasks.push(task);
         saveTasks(tasks);
         addTaskToDOM(task);
-    
+
         form.reset();
-        if (window.innerWidth <= 600) { // Проверяем ширину экрана
-            hiddenInput.focus(); // Перемещаем фокус на скрытое поле
-        }
+        hiddenInput.focus(); // Перемещаем фокус на скрытое поле
     }
+
     function editTask(taskId) {
         const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         const task = tasks.find(t => t.id === taskId);
